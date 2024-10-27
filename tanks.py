@@ -30,16 +30,15 @@ class MyTank(Tank):
 
     def spot_enemy(self, enemy):
 
-        # spot_enemy_phrases = ['Enemy spotted! Hold your fire!',
-        #                       'We’ve got eyes on the target!',
-        #                       'Contact! Enemy in sight!',
-        #                       'Hostile detected, coordinates locked!',
-        #                       'Enemy tank in range, get ready!']
+        spot_enemy_phrases = ['Enemy spotted! Hold your fire!',
+                              'We’ve got eyes on the target!',
+                              'Contact! Enemy in sight!',
+                              'Hostile detected, coordinates locked!',
+                              'Enemy tank in range, get ready!']
 
         distance = abs(self.coordinates - enemy.coordinates)
         if distance <= self.view_distance:
-            print('Enemy spotted! SHOOT!!!')
-            # print(f'{spot_enemy_phrases[randint(0, len(spot_enemy_phrases) - 1)]}')
+            print(f'{spot_enemy_phrases[randint(0, len(spot_enemy_phrases) - 1)]} {enemy}')
             return True
         else:
             return False
@@ -110,22 +109,26 @@ def main():
     if key_1 == key_1_logger:
         print(start_phrases[randint(0, len(start_phrases) - 1)])
 
-        while MyTank.is_alive(t34):
+        while t34.is_alive():
             key_2_logger = input(str(f'Commander, we are waiting for your instructions!: '))
 
-            MyTank.spot_enemy(t34, enemy)  # ????????? HUITA NE RABOTAET
-            Enemy.do_damage(enemy, t34)
+
+            for enemy in enemys:
+                enemy.do_damage(t34)
+
 
             if key_2_logger in keys_to_move_forward:
-                MyTank.move_tank_forward(t34)
+                t34.move_tank_forward()
                 print(f'{move_forward_phrases[randint(0, len(move_forward_phrases) - 1)]} {t34.coordinates}')
 
-            if MyTank.spot_enemy(t34, enemy):
-                    MyTank.shoot(t34, enemy)
 
             if key_2_logger in keys_to_move_backward:
-                MyTank.move_tank_backward(t34)
+                t34.move_tank_backward()
                 print(f'{move_forward_phrases[randint(0, len(move_forward_phrases) - 1)]} {t34.coordinates}')
+
+
+            for enemy in enemys:
+                t34.shoot(enemy)
 
 
         MyTank.tank_destroyed(t34)
@@ -138,7 +141,7 @@ def main():
 
 '''
 
-stay still and shoot
+camo for enemies
 choose shell 
 categories of tanks
 
