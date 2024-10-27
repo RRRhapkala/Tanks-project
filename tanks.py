@@ -1,5 +1,7 @@
+from cmath import phase
 from random import randint, random
 
+from typing_extensions import get_origin
 
 
 class Tank:
@@ -25,9 +27,17 @@ class Tank:
 class MyTank(Tank):
 
     def spot_enemy(self, enemy):
+
+        # spot_enemy_phrases = ['Enemy spotted! Hold your fire!',
+        #                       'We’ve got eyes on the target!',
+        #                       'Contact! Enemy in sight!',
+        #                       'Hostile detected, coordinates locked!',
+        #                       'Enemy tank in range, get ready!']
+
         distance = abs(self.coordinates - enemy.coordinates)
         if distance <= self.view_distance:
             print('Enemy spotted! SHOOT!!!')
+            # print(f'{spot_enemy_phrases[randint(0, len(spot_enemy_phrases) - 1)]}')
             return True
         else:
             return False
@@ -51,12 +61,20 @@ class MyTank(Tank):
 class Enemy(Tank):
 
     def do_damage(self, my_tank):
+
+        got_damage_phrases = ['We’re hit! Armor’s holding… barely.',
+                             'Took a hit! Systems still operational.',
+                             'Damage sustained! Brace for impact!',
+                             'They got us! Minimal damage.',
+                             'We’re taking fire! Hold steady!']
+
         if self.is_alive():
             distance = abs(my_tank.coordinates - self.coordinates)
             if self.view_distance >= distance:
                 my_tank.health -= self.damage
-                print(f'We got hit, - {self.damage} hp, we have {my_tank.health} hp left')
+                print(f' {got_damage_phrases[randint(0, len(got_damage_phrases)-1)]} -{self.damage} hp, we have {my_tank.health} hp left')
                 return my_tank.health
+
 
 
 
@@ -65,27 +83,52 @@ class Enemy(Tank):
 
 def main():
 
+    start_phrases = ['Engine’s coming to life.',
+                     'Ignition ready, engine’s roaring!',
+                     'Powering up! Let’s roll!',
+                     'Engine online, we are ready to go!',
+                     'Starting up… All systems check!']
+
+    move_forward_phrases = ['Advancing forward, current GPS coordinates: ',
+                            'Moving out! New heading: ',
+                            'Pushing forward, destination locked at ',
+                            'Rolling out, heading towards ',
+                            'Moving ahead. Current coordinates: ']
+
+    keys_to_move = ['forward', 'w', 'go']
+
 
     t34 = MyTank(50, 10, 20, 0, 0)
     enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(40, 150), experience=0) for i in range(5)]
     for enemy in enemys:
-        print(f'{enemy}, {enemy.damage}, {enemy.coordinates}')
-    key_1_logger = 'go'
-    while MyTank.is_alive(t34):
-        key_1 = str(input("Type go to start "))
-        print(key_1)
-        if key_1 == key_1_logger:
 
-            MyTank.move_tank(t34)
-            print(f'{t34.coordinates}')
-            MyTank.spot_enemy(t34, enemy)
-            if MyTank.spot_enemy(t34, enemy):
-                MyTank.shoot(t34, enemy)
-            Enemy.do_damage(enemy, t34)
-        else:
-            print("What do you want to do?")
-            continue
-    MyTank.tank_destroyed(t34)
+        print(f'{enemy}, {enemy.damage}, {enemy.coordinates}')
+
+    key_1 = str(input("Type go to start "))
+    key_1_logger = 'go'
+
+    if key_1 == key_1_logger:
+        print(start_phrases[randint(0, len(start_phrases) - 1)])
+
+        while MyTank.is_alive(t34):
+            key_2_logger = input(str(f'Commander, we are waiting for your instructions!: '))
+
+            if key_2_logger in keys_to_move:
+                MyTank.move_tank(t34)
+                print(f'{move_forward_phrases[randint(0, len(move_forward_phrases) - 1)]} {t34.coordinates}')
+                MyTank.spot_enemy(t34, enemy)
+                Enemy.do_damage(enemy, t34)
+
+                if MyTank.spot_enemy(t34, enemy):
+
+                    MyTank.shoot(t34, enemy)
+
+
+        MyTank.tank_destroyed(t34)
+    else:
+        print("What do you want to do?")
+
+
 
 
 
