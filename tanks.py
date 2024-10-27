@@ -1,7 +1,5 @@
-from cmath import phase
 from random import randint, random
 
-from typing_extensions import get_origin
 
 
 class Tank:
@@ -13,8 +11,12 @@ class Tank:
         self.experience = experience
 
 
-    def move_tank(self):
+    def move_tank_forward(self):
         self.coordinates += 10
+        return self.coordinates
+
+    def move_tank_backward(self):
+        self.coordinates -= 10
         return self.coordinates
 
     def is_alive(self):
@@ -77,10 +79,6 @@ class Enemy(Tank):
 
 
 
-
-
-
-
 def main():
 
     start_phrases = ['Engine’s coming to life.',
@@ -95,7 +93,9 @@ def main():
                             'Rolling out, heading towards ',
                             'Moving ahead. Current coordinates: ']
 
-    keys_to_move = ['forward', 'w', 'go']
+    keys_to_move_forward = ['forward', 'w', 'go']
+
+    keys_to_move_backward = ['backward', 's', 'back up']
 
 
     t34 = MyTank(50, 10, 20, 0, 0)
@@ -113,15 +113,19 @@ def main():
         while MyTank.is_alive(t34):
             key_2_logger = input(str(f'Commander, we are waiting for your instructions!: '))
 
-            if key_2_logger in keys_to_move:
-                MyTank.move_tank(t34)
+            MyTank.spot_enemy(t34, enemy)
+            Enemy.do_damage(enemy, t34)
+
+            if key_2_logger in keys_to_move_forward:
+                MyTank.move_tank_forward(t34)
                 print(f'{move_forward_phrases[randint(0, len(move_forward_phrases) - 1)]} {t34.coordinates}')
-                MyTank.spot_enemy(t34, enemy)
-                Enemy.do_damage(enemy, t34)
 
-                if MyTank.spot_enemy(t34, enemy):
-
+            if MyTank.spot_enemy(t34, enemy):
                     MyTank.shoot(t34, enemy)
+
+            if key_2_logger in keys_to_move_backward:
+                MyTank.move_tank_backward(t34)
+                print(f'{move_forward_phrases[randint(0, len(move_forward_phrases) - 1)]} {t34.coordinates}')
 
 
         MyTank.tank_destroyed(t34)
@@ -133,8 +137,6 @@ def main():
 
 
 '''
-move right 
-move left
 
 stay still and shoot
 choose shell 
@@ -152,17 +154,17 @@ categories of tanks
 # loh = Enemy(40, 10, 10, 40, 0)
 # t34 = MyTank(50, 20, 10, 0,0)
 # t34.spot_enemy(loh)
-# t34.move_tank()
+# t34.move_tank_forward()
 # t34.spot_enemy(loh)
 # t34.shoot(loh)
-# t34.move_tank()
+# t34.move_tank_forward()
 # t34.spot_enemy(loh)
 # loh.do_damage(t34)
-# t34.move_tank()
+# t34.move_tank_forward()
 # t34.spot_enemy(loh)
 # t34.shoot(loh)
 # loh.do_damage(t34)
-# t34.move_tank()
+# t34.move_tank_forward()
 # t34.spot_enemy(loh)
 # t34.shoot(loh)
 # loh2 = Enemy(40, 20, 10, 50, 0)
