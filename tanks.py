@@ -113,7 +113,7 @@ def main():
         while MyTank.is_alive(t34):
             key_2_logger = input(str(f'Commander, we are waiting for your instructions!: '))
 
-            MyTank.spot_enemy(t34, enemy)
+            MyTank.spot_enemy(t34, enemy)  # ????????? HUITA NE RABOTAET
             Enemy.do_damage(enemy, t34)
 
             if key_2_logger in keys_to_move_forward:
