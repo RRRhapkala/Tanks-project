@@ -44,12 +44,31 @@ class MyTank(Tank):
             return False
 
 
+    def load_shell(self):
+        ...
+
+    def upgrade_tank(self, experience):
+        exp_levels = [15, 30, 45]
+        upgrade_phrases = ['We have taken down enough enemies — time to reinforce the tank!',
+                           'Impressive firepower! Lets boost our tank armor!',
+                           'Target count rising, lets level up this tank',
+                           'Clearing the field, time to add some upgrades',
+                           'Tank racking up wins, powering up the arsenal']
+        if self.experience > exp_levels[0]:
+            print(f'{upgrade_phrases[randint(0, len(upgrade_phrases) - 1)]}, Exp lebe')
+        if self.experience > exp_levels[1]:
+            ...
+        if self.experience > exp_levels[2]:
+            ...
+
+
     def shoot(self, enemy):
         if self.spot_enemy(enemy):
             enemy.health -= self.damage
+            self.experience += 5                    #expirience
             if enemy.is_alive():
                 print(f'Got him, enemy got {self.damage}, he has left {enemy.health}')
-                return enemy.health
+                return enemy.health, self.experience
             else:
                 print(f'Enemy destroyed')
 
@@ -130,6 +149,7 @@ def main():
             for enemy in enemys:
                 t34.shoot(enemy)
 
+            print(f'our xp is {t34.experience}')
 
         MyTank.tank_destroyed(t34)
     else:
