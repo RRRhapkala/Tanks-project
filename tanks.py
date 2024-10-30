@@ -55,11 +55,14 @@ class MyTank(Tank):
                            'Clearing the field, time to add some upgrades',
                            'Tank racking up wins, powering up the arsenal']
         if self.experience > exp_levels[0]:
-            print(f'{upgrade_phrases[randint(0, len(upgrade_phrases) - 1)]}, Exp lebe')
-        if self.experience > exp_levels[1]:
-            ...
-        if self.experience > exp_levels[2]:
-            ...
+            print(f'{upgrade_phrases[randint(0, len(upgrade_phrases) - 1)]}, level {exp_levels[0]}')
+            self.health += 5
+            self.damage += 3
+            self.experience -= exp_levels[0]
+            exp_levels.pop(0)
+        else:
+            print('Not enough experience to upgrade the tank')
+
 
 
     def shoot(self, enemy):
@@ -80,6 +83,10 @@ class MyTank(Tank):
 
 class Enemy(Tank):
 
+    def __init__(self, health, damage, view_distance, coordinates, experience, enemy_id):
+        super().__init__(health, damage, view_distance, coordinates, experience)
+        self.enemy_id = enemy_id
+
     def do_damage(self, my_tank):
 
         got_damage_phrases = ['We’re hit! Armor’s holding… barely.',
@@ -92,6 +99,7 @@ class Enemy(Tank):
             distance = abs(my_tank.coordinates - self.coordinates)
             if self.view_distance >= distance:
                 my_tank.health -= self.damage
+                my_tank.experience += 2
                 print(f' {got_damage_phrases[randint(0, len(got_damage_phrases)-1)]} -{self.damage} hp, we have {my_tank.health} hp left')
                 return my_tank.health
 
@@ -117,10 +125,10 @@ def main():
 
 
     t34 = MyTank(50, 10, 20, 0, 0)
-    enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(40, 150), experience=0) for i in range(5)]
+    enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(0, 250), experience=0, enemy_id=0 + i) for i in range(5)]
     for enemy in enemys:
 
-        print(f'{enemy}, {enemy.damage}, {enemy.coordinates}')
+        print(f'{enemy}, {enemy.damage}, {enemy.coordinates}, {enemy.enemy_id}')
 
     key_1 = str(input("Type go to start "))
     key_1_logger = 'go'
@@ -134,7 +142,8 @@ def main():
 
             for enemy in enemys:
                 enemy.do_damage(t34)
-
+                if enemy.health <= 0:
+                    enemys.pop(enemys.index(enemy))
 
             if key_2_logger in keys_to_move_forward:
                 t34.move_tank_forward()
@@ -146,8 +155,13 @@ def main():
                 print(f'{move_forward_phrases[randint(0, len(move_forward_phrases) - 1)]} {t34.coordinates}')
 
 
+            if key_2_logger == "up":
+                t34.upgrade_tank(t34.experience)
+
+
             for enemy in enemys:
                 t34.shoot(enemy)
+
 
             print(f'our xp is {t34.experience}')
 
