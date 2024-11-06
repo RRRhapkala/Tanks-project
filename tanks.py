@@ -28,6 +28,10 @@ class Tank:
 
 class MyTank(Tank):
 
+    def __init__(self, health, damage, view_distance, coordinates, experience, tank_level):
+        super().__init__(health, damage, view_distance, coordinates, experience)
+        self.tank_level = tank_level
+
     def spot_enemy(self, enemy):
 
         spot_enemy_phrases = ['Enemy spotted! Hold your fire!',
@@ -48,21 +52,31 @@ class MyTank(Tank):
         ...
 
     def upgrade_tank(self, experience):
-        exp_levels = [15, 30, 45]
+        upgrade_levels = [0, 1, 2]
         upgrade_phrases = ['We have taken down enough enemies — time to reinforce the tank!',
                            'Impressive firepower! Lets boost our tank armor!',
                            'Target count rising, lets level up this tank',
                            'Clearing the field, time to add some upgrades',
                            'Tank racking up wins, powering up the arsenal']
-        if self.experience > exp_levels[0]:
-            print(f'{upgrade_phrases[randint(0, len(upgrade_phrases) - 1)]}, level {exp_levels[0]}')
+        if self.experience >= 20 and self.tank_level == upgrade_levels[0]:
+            print(upgrade_phrases[randint(0, len(upgrade_phrases) - 1)])
             self.health += 5
+            self.damage += 2
+            self.experience -= 20
+            self.tank_level += 1
+        if self.experience >= 40 and self.tank_level == upgrade_levels[1]:
+            print(upgrade_phrases[randint(0, len(upgrade_phrases) - 1)])
+            self.health += 7
             self.damage += 3
-            self.experience -= exp_levels[0]
-            exp_levels.pop(0)
+            self.experience -= 40
+            self.tank_level += 1
+        if self.experience >= 60 and self.tank_level == upgrade_levels[2]:
+            print(upgrade_phrases[randint(0, len(upgrade_phrases) - 1)])
+            self.health += 10
+            self.damage += 4
+            self.experience -= 60
         else:
-            print('Not enough experience to upgrade the tank')
-
+            print('Not enough experience to upgrade Tank')
 
 
     def shoot(self, enemy):
@@ -124,8 +138,8 @@ def main():
     keys_to_move_backward = ['backward', 's', 'back up']
 
 
-    t34 = MyTank(50, 10, 20, 0, 0)
-    enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(0, 250), experience=0, enemy_id=0 + i) for i in range(5)]
+    t34 = MyTank(1000, 10, 20, 0, 0, 0)
+    enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(0, 250), experience=0, enemy_id=0 + i) for i in range(7)]
     for enemy in enemys:
 
         print(f'{enemy}, {enemy.damage}, {enemy.coordinates}, {enemy.enemy_id}')
@@ -163,7 +177,7 @@ def main():
                 t34.shoot(enemy)
 
 
-            print(f'our xp is {t34.experience}')
+            print(f'our xp is {t34.experience}, tank level is {t34.tank_level}')
 
         MyTank.tank_destroyed(t34)
     else:
