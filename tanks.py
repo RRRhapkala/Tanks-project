@@ -51,32 +51,21 @@ class MyTank(Tank):
     def load_shell(self):
         ...
 
-    def upgrade_tank(self, experience):
-        upgrade_levels = [0, 1, 2]
-        upgrade_phrases = ['We have taken down enough enemies — time to reinforce the tank!',
-                           'Impressive firepower! Lets boost our tank armor!',
-                           'Target count rising, lets level up this tank',
-                           'Clearing the field, time to add some upgrades',
-                           'Tank racking up wins, powering up the arsenal']
-        if self.experience >= 20 and self.tank_level == upgrade_levels[0]:
-            print(upgrade_phrases[randint(0, len(upgrade_phrases) - 1)])
-            self.health += 5
-            self.damage += 2
-            self.experience -= 20
-            self.tank_level += 1
-        if self.experience >= 40 and self.tank_level == upgrade_levels[1]:
-            print(upgrade_phrases[randint(0, len(upgrade_phrases) - 1)])
-            self.health += 7
-            self.damage += 3
-            self.experience -= 40
-            self.tank_level += 1
-        if self.experience >= 60 and self.tank_level == upgrade_levels[2]:
-            print(upgrade_phrases[randint(0, len(upgrade_phrases) - 1)])
-            self.health += 10
-            self.damage += 4
-            self.experience -= 60
-        else:
-            print('Not enough experience to upgrade Tank')
+    def upgrade_tank(self):
+        i = 0
+        exp_levels = [20, 40, 80]
+        health_giver = 10
+        damage_giver = 2
+        for i in range(len(exp_levels)):
+            if self.experience >= exp_levels[i] and self.experience - exp_levels[i] >= 0:
+                self.health += health_giver
+                self.damage += damage_giver
+                self.experience -= exp_levels[i]
+                i += 1
+                health_giver += 5
+                damage_giver += 1
+            else:
+                print('NO')
 
 
     def shoot(self, enemy):
