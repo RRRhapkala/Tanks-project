@@ -34,42 +34,66 @@ class MyTank(Tank):
 
     def spot_enemy(self, enemy):
 
-        spot_enemy_phrases = ['Enemy spotted! Hold your fire!',
+        spot_enemy_phrases = ['Hold your fire! Enemy spotted!',
                               'We’ve got eyes on the target!',
                               'Contact! Enemy in sight!',
-                              'Hostile detected, coordinates locked!',
-                              'Enemy tank in range, get ready!']
+                              'Coordinates locked, Hostile detected!',
+                              'Get ready, Enemy tank in range!']
 
         distance = abs(self.coordinates - enemy.coordinates)
         if distance <= self.view_distance:
-            print(f'{spot_enemy_phrases[randint(0, len(spot_enemy_phrases) - 1)]} {enemy}')
+            print(f'{spot_enemy_phrases[randint(0, len(spot_enemy_phrases) - 1)]} - {enemy.enemy_category}')
             return True
         else:
             return False
 
 
     def load_shell(self):
-        ...
 
-    def upgrade_tank(self):
-        i = 0
-        exp_levels = [20, 40, 80]
-        health_giver = 10
-        damage_giver = 2
-        for i in range(len(exp_levels)):
-            if self.experience >= exp_levels[i] and self.experience - exp_levels[i] >= 0:
-                self.health += health_giver
-                self.damage += damage_giver
-                self.experience -= exp_levels[i]
-                i += 1
-                health_giver += 5
-                damage_giver += 1
-            else:
-                print('NO')
+        load_ammo_phrases = ['Commander, what’s our shell choice? ',
+                             'Commander, what round are we loading? ',
+                             'Commander, which ammo type are we using? ',
+                             'Sir, what’s the shell for this target? ',
+                             'Commander, what’s the loadout? ']
+
+        ammunition = ['he', 'ap', 'apcr']
+        he_damage = randint(15, 20)
+        ap_damage = randint(8, 12)
+        apcr_damage = randint(6, 10)
+        ammo_chosen = input(load_ammo_phrases[randint(0, len(load_ammo_phrases) - 1)])
+        if ammo_chosen == ammunition[0]:
+            self.damage = he_damage
+            print(f'High-explosive selected – time to clear out soft targets!')
+            return True
+        if ammo_chosen == ammunition[1]:
+            self.damage = ap_damage
+            print(f'Armor-piercing loaded! We’re going for maximum damage!')
+            return True
+        if ammo_chosen == ammunition[2]:
+            self.damage = apcr_damage
+            print(f'Switching to APCR – we need speed and precision on this one!')
+            return True
+
+
+
+    # def upgrade_tank(self):
+    #     i = 0
+    #     exp_levels = [20, 40, 80]
+    #     health_giver = 10
+    #     damage_giver = 2
+    #     if self.experience >= exp_levels[i]:
+    #         self.health += health_giver
+    #         self.damage += damage_giver
+    #         self.experience -= exp_levels[i]
+    #         i += 1
+    #         health_giver += 5
+    #         damage_giver += 1
+    #     else:
+    #         print('NO')
 
 
     def shoot(self, enemy):
-        if self.spot_enemy(enemy):
+        if self.spot_enemy(enemy) and self.load_shell():
             enemy.health -= self.damage
             self.experience += 5                    #expirience
             if enemy.is_alive():
@@ -86,9 +110,10 @@ class MyTank(Tank):
 
 class Enemy(Tank):
 
-    def __init__(self, health, damage, view_distance, coordinates, experience, enemy_id):
+    def __init__(self, health, damage, view_distance, coordinates, experience, enemy_id, enemy_category):
         super().__init__(health, damage, view_distance, coordinates, experience)
         self.enemy_id = enemy_id
+        self.enemy_category = enemy_category
 
     def do_damage(self, my_tank):
 
@@ -101,6 +126,7 @@ class Enemy(Tank):
         if self.is_alive():
             distance = abs(my_tank.coordinates - self.coordinates)
             if self.view_distance >= distance:
+                #enemy category match/case
                 my_tank.health -= self.damage
                 my_tank.experience += 2
                 print(f' {got_damage_phrases[randint(0, len(got_damage_phrases)-1)]} -{self.damage} hp, we have {my_tank.health} hp left')
@@ -126,12 +152,14 @@ def main():
 
     keys_to_move_backward = ['backward', 's', 'back up']
 
+    categories_of_enemys = ['Heavy tank', 'Tank destroyer', 'Medium tank', 'Light tank']
 
     t34 = MyTank(1000, 10, 20, 0, 0, 0)
-    enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(0, 250), experience=0, enemy_id=0 + i) for i in range(7)]
+    enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(0, 250), experience=0,
+                    enemy_id=0 + i, enemy_category=categories_of_enemys[randint(0, len(categories_of_enemys) - 1)]) for i in range(7)]
     for enemy in enemys:
 
-        print(f'{enemy}, {enemy.damage}, {enemy.coordinates}, {enemy.enemy_id}')
+        print(f'{enemy}, {enemy.damage}, {enemy.coordinates}, {enemy.enemy_id}, {enemy.enemy_category}')
 
     key_1 = str(input("Type go to start "))
     key_1_logger = 'go'
@@ -158,8 +186,8 @@ def main():
                 print(f'{move_forward_phrases[randint(0, len(move_forward_phrases) - 1)]} {t34.coordinates}')
 
 
-            if key_2_logger == "up":
-                t34.upgrade_tank(t34.experience)
+            # if key_2_logger == "up":
+            #     t34.upgrade_tank()
 
 
             for enemy in enemys:
