@@ -126,7 +126,6 @@ class Enemy(Tank):
         if self.is_alive():
             distance = abs(my_tank.coordinates - self.coordinates)
             if self.view_distance >= distance:
-                #enemy category match/case
                 my_tank.health -= self.damage
                 my_tank.experience += 2
                 print(f' {got_damage_phrases[randint(0, len(got_damage_phrases)-1)]} -{self.damage} hp, we have {my_tank.health} hp left')
@@ -155,7 +154,7 @@ def main():
     categories_of_enemys = ['Heavy tank', 'Tank destroyer', 'Medium tank', 'Light tank']
 
     t34 = MyTank(1000, 10, 20, 0, 0, 0)
-    enemys = [Enemy(health=50 + i, damage=10 + i, view_distance=10, coordinates=randint(0, 250), experience=0,
+    enemys = [Enemy(health=50 + i, damage=10, view_distance=10, coordinates=randint(0, 250), experience=0,
                     enemy_id=0 + i, enemy_category=categories_of_enemys[randint(0, len(categories_of_enemys) - 1)]) for i in range(7)]
     for enemy in enemys:
 
@@ -172,6 +171,15 @@ def main():
 
 
             for enemy in enemys:
+                match enemy.enemy_category:
+                    case 'Heavy tank':
+                        enemy.damage = randint(10, 15)
+                    case 'Tank destroyer':
+                        enemy.damage = randint(15, 18)
+                    case 'Medium tank':
+                        enemy.damage = randint(9, 13)
+                    case 'Light tank':
+                        enemy.damage = randint(7, 11)
                 enemy.do_damage(t34)
                 if enemy.health <= 0:
                     enemys.pop(enemys.index(enemy))
